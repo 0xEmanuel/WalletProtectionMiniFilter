@@ -1,0 +1,96 @@
+;;;
+;;; WalletProtectionMiniFilter
+;;;
+
+[Version]
+Signature   = "$Windows NT$"
+
+Class       = "ActivityMonitor"                         ;This is determined by the work this filter driver does
+ClassGuid   = {904860d7-1626-4bea-83a6-a23bfc3311a3}    ;This value is determined by the Load Order Group value
+Provider    = %ManufacturerName%
+DriverVer   = 
+CatalogFile = WalletProtectionMiniFilter.cat
+
+[DestinationDirs] ; specifies the directories where minifilter driver and application files will be copied.
+DefaultDestDir          = 12
+MiniFilter.DriverFiles  = 12            ; value 12 refers to the Drivers directory (%windir%\system32\drivers),
+
+;;
+;; Default install sections
+;;
+
+[DefaultInstall]
+OptionDesc          = %ServiceDescription%
+CopyFiles           = MiniFilter.DriverFiles
+
+[DefaultInstall.Services]
+AddService          = %ServiceName%,,MiniFilter.Service ; syntax: AddService=ServiceName,[flags],service-install-section[,event-log-install-section[,[EventLogType][,EventName]]]
+
+;;
+;; Default uninstall sections
+;;
+
+[DefaultUninstall]
+DelFiles   = MiniFilter.DriverFiles
+
+[DefaultUninstall.Services]
+DelService = %ServiceName%,0x200      ;Ensure service is stopped before deleting
+
+;
+; Services Section
+;
+
+[MiniFilter.Service]
+DisplayName      = %ServiceName%
+Description      = %ServiceDescription%
+ServiceBinary    = %12%\%DriverName%.sys        ;%windir%\system32\drivers\
+Dependencies     = "FltMgr"
+ServiceType      = 2                            ;SERVICE_FILE_SYSTEM_DRIVER
+StartType        = 0
+ErrorControl     = 1                            ;SERVICE_ERROR_NORMAL
+
+LoadOrderGroup = "FSFilter Activity Monitor"
+
+AddReg           = MiniFilter.AddRegistry
+
+;
+; Registry Modifications
+;
+
+[MiniFilter.AddRegistry]
+HKR,,"DebugFlags",0x00010001 ,0x0
+HKR,,"SupportedFeatures",0x00010001,0x3
+HKR,"Instances","DefaultInstance",0x00000000,%DefaultInstance%
+HKR,"Instances\"%Instance1.Name%,"Altitude",0x00000000,%Instance1.Altitude%
+HKR,"Instances\"%Instance1.Name%,"Flags",0x00010001,%Instance1.Flags%
+
+;
+; Copy Files
+;
+
+[MiniFilter.DriverFiles]
+%DriverName%.sys
+
+[SourceDisksFiles]
+WalletProtectionMiniFilter.sys = 1,,
+
+[SourceDisksNames]
+1 = %DiskId1%,,,
+
+;;
+;; String Section
+;;
+
+[Strings]
+ManufacturerName        = "Emanuel Durmaz"
+ServiceDescription      = "WalletProtectionMiniFilter Mini-Filter Driver"
+ServiceName             = "WalletProtectionMiniFilter"
+DriverName              = "WalletProtectionMiniFilter"
+DiskId1                 = "WalletProtectionMiniFilter Device Installation Disk"
+
+;Instances specific information.
+DefaultInstance         = "WalletProtectionMiniFilter Instance"
+Instance1.Name          = "WalletProtectionMiniFilter Instance"
+
+Instance1.Altitude       = "361233" ; FSFilter Activity Monitor: RANGE: 360000-389999;
+Instance1.Flags         = 0x0              ; Allow all attachments

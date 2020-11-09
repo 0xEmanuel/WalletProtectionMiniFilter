@@ -1,0 +1,28 @@
+#pragma once
+
+#define WALLETPROTECTION
+
+#define WPP_CONTROL_GUIDS \
+    WPP_DEFINE_CONTROL_GUID(CtlGuid,(3f7a571b, 5519, 426a, 8ae1, 2732791c95f8),  \
+        WPP_DEFINE_BIT(FLAG_ONE)                \
+        WPP_DEFINE_BIT(FLAG_TWO) )
+
+// GUID: 3f7a571b-5519-426a-8ae1-2732791c95f8
+
+
+
+#define WPP_LEVEL_FLAGS_LOGGER(level,flags) WPP_LEVEL_LOGGER(flags)
+#define WPP_LEVEL_FLAGS_ENABLED(level, flags) (WPP_LEVEL_ENABLED(flags) && WPP_CONTROL(WPP_BIT_ ## flags).Level >= level)
+
+
+
+#define WPP_FLAG_EXP_PRE(FLAGS, HR) {if (HR != STATUS_SUCCESS) {
+
+
+#define WPP_FLAG_EXP_POST(FLAGS, HR) ;}}
+
+
+#define WPP_FLAG_EXP_ENABLED(FLAGS, HR) WPP_FLAG_ENABLED(FLAGS)
+#define WPP_FLAG_EXP_LOGGER(FLAGS, HR) WPP_FLAG_LOGGER(FLAGS)
+
+#define WPP_CHECK_INIT
